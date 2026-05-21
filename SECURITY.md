@@ -8,9 +8,15 @@ If you discover a security vulnerability in KnotCode, please report it responsib
 
 Instead, DM [**@BunsDev**](https://x.com/BunsDev) or use [GitHub's private vulnerability reporting](https://github.com/OpenKnots/code-editor/security/advisories/new).
 
-<!-- Instead, email **security@openknot.ai** or use [GitHub's private vulnerability reporting](https://github.com/OpenKnots/code-editor/security/advisories/new). -->
-
 We will acknowledge your report within 48 hours and aim to release a fix within 7 days for critical issues.
+
+## Supported Versions
+
+| Version | Supported |
+|---------|-----------|
+| 1.11.x (latest) | :white_check_mark: Active security updates |
+| 1.10.x | :white_check_mark: Critical fixes only |
+| < 1.10 | :x: End of life — please upgrade |
 
 ## Scope
 
