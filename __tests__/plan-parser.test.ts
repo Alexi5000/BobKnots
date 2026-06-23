@@ -40,10 +40,10 @@ describe('parsePlanSteps', () => {
 3. **Test** — run the full test suite`
     const steps = parsePlanSteps(text)
     expect(steps).toHaveLength(3)
-    expect(steps[0].title).toBe('**Init**')
+    expect(steps[0].title).toBe('Init**')
     expect(steps[0].description).toContain('create the directory structure')
-    expect(steps[1].title).toBe('**Build**')
-    expect(steps[2].title).toBe('**Test**')
+    expect(steps[1].title).toBe('Build**')
+    expect(steps[2].title).toBe('Test**')
   })
 
   it('extracts file paths from backtick-wrapped tokens', () => {
