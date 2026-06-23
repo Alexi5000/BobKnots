@@ -221,7 +221,9 @@ export function QuickOpen({ open, onClose, onSelect }: QuickOpenProps) {
             }}
             onKeyDown={handleKeyDown}
             placeholder="Search files by name..."
+            role="combobox"
             aria-label="Search files"
+            aria-expanded="true"
             aria-autocomplete="list"
             aria-controls="quick-open-list"
             aria-activedescendant={results[selected] ? `quick-open-item-${selected}` : undefined}

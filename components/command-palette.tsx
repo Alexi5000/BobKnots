@@ -554,7 +554,9 @@ export function CommandPalette({ open, onClose, onRun }: CommandPaletteProps) {
               }
             }}
             placeholder="Run a command..."
+            role="combobox"
             aria-label="Run a command"
+            aria-expanded="true"
             aria-autocomplete="list"
             aria-controls="command-palette-list"
             aria-activedescendant={flatList[selectedIndex] ? `command-palette-item-${selectedIndex}` : undefined}
