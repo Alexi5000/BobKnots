@@ -12,11 +12,9 @@ We will acknowledge your report within 48 hours and aim to release a fix within 
 
 ## Supported Versions
 
-| Version | Supported |
-|---------|-----------|
-| 1.11.x (latest) | :white_check_mark: Active security updates |
-| 1.10.x | :white_check_mark: Critical fixes only |
-| < 1.10 | :x: End of life — please upgrade |
+KnotCode ships as a continuously-updated static app, so security fixes land in
+the latest release. Please make sure you're on the most recent version before
+reporting an issue, and upgrade to pick up any fix.
 
 ## Scope
 
