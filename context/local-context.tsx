@@ -171,20 +171,6 @@ export function LocalProvider({ children }: { children: ReactNode }) {
 
   const webDirHandleRef = useRef<FileSystemDirectoryHandle | null>(null)
 
-  useEffect(() => {
-    const hasTauriFS = isTauri() && !isIOSTauri()
-    setDesktop(hasTauriFS)
-    setLocalMode(true)
-
-    if (hasTauriFS) {
-      const recent = getRecentFolders()
-      if (recent.length > 0) {
-        setRootPathState(recent[0])
-        loadTreeTauri(recent[0])
-      }
-    }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
   // ── Tauri tree loader ──
   const loadTreeTauri = useCallback(async (root: string) => {
     const tree = await tauriInvoke<FileEntry[]>('local_read_tree', { root })
@@ -214,6 +200,20 @@ export function LocalProvider({ children }: { children: ReactNode }) {
       setAheadBehind({ ahead: 0, behind: 0 })
     }
   }, [])
+
+  useEffect(() => {
+    const hasTauriFS = isTauri() && !isIOSTauri()
+    setDesktop(hasTauriFS)
+    setLocalMode(true)
+
+    if (hasTauriFS) {
+      const recent = getRecentFolders()
+      if (recent.length > 0) {
+        setRootPathState(recent[0])
+        loadTreeTauri(recent[0])
+      }
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Web tree loader ──
   const loadTreeWeb = useCallback(async (handle: FileSystemDirectoryHandle) => {

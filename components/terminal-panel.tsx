@@ -323,7 +323,7 @@ function TerminalPane({
   )
 
   const createTerminal = useCallback(
-    async (initialCommand?: string) => {
+    async function createTerminal(initialCommand?: string) {
       if (!isDesktop) return
       if (session.terminalId != null) {
         try {

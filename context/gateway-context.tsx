@@ -34,11 +34,7 @@ import {
 
 // ─── Connection state machine ────────────────────────────────────────────────
 export type ConnectionStatus =
-  | 'disconnected'
-  | 'connecting'
-  | 'authenticating'
-  | 'connected'
-  | 'error'
+  'disconnected' | 'connecting' | 'authenticating' | 'connected' | 'error'
 
 interface PendingRequest {
   resolve: (payload: unknown) => void
@@ -114,7 +110,7 @@ export function GatewayProvider({ children }: { children: React.ReactNode }) {
 
   // Core connect logic
   const doConnect = useCallback(
-    (url: string, credential: string) => {
+    function doConnect(url: string, credential: string) {
       cleanup()
       intentionalDisconnectRef.current = false
       setError(null)
@@ -249,8 +245,7 @@ export function GatewayProvider({ children }: { children: React.ReactNode }) {
             setSnapshot(snap)
 
             const authInfo = payload.auth as
-              | { deviceToken?: string; role?: string; scopes?: string[] }
-              | undefined
+              { deviceToken?: string; role?: string; scopes?: string[] } | undefined
             const scopes =
               authInfo?.scopes ??
               (Array.isArray(payload.scopes) ? (payload.scopes as string[]) : []) ??
