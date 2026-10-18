@@ -8,6 +8,10 @@ MODE="${1:-staged}"
 BASELINE_PATH="${GITLEAKS_BASELINE:-.gitleaks.baseline.json}"
 
 resolve_gitleaks() {
+  if command -v gitleaks >/dev/null 2>&1; then
+    command -v gitleaks
+    return 0
+  fi
   if [ -x "$ROOT/.tools/bin/gitleaks" ]; then
     echo "$ROOT/.tools/bin/gitleaks"
     return 0
