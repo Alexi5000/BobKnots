@@ -778,7 +778,7 @@ function saveKanbanData(data: KanbanData) {
 }
 
 function genId(prefix: string) {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
+  return `${prefix}-${Date.now()}-${crypto.randomUUID()}`
 }
 
 function getDueDateStatus(dueDate?: number): 'overdue' | 'soon' | 'ok' | null {
