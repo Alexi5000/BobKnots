@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import dynamic from 'next/dynamic'
+import { safePreviewUrl } from '@/lib/safe-navigation'
 import { Icon } from '@iconify/react'
 
 const AgentPanel = dynamic(() => import('@/components/agent-panel').then((m) => m.AgentPanel), {
@@ -24,14 +25,14 @@ export function SplitPreviewChat({
     }
     return 0.5
   })
-  const [url, setUrl] = useState(previewUrl)
+  const [url, setUrl] = useState(() => safePreviewUrl(previewUrl) ?? 'about:blank')
   const [inputUrl, setInputUrl] = useState(previewUrl)
   const [isDragging, setIsDragging] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
 
   useEffect(() => {
-    setUrl(previewUrl)
+    setUrl(safePreviewUrl(previewUrl) ?? 'about:blank')
     setInputUrl(previewUrl)
   }, [previewUrl])
 
@@ -74,20 +75,22 @@ export function SplitPreviewChat({
 
   const handleRefresh = useCallback(() => {
     if (iframeRef.current?.contentWindow) {
-      iframeRef.current.contentWindow.location.reload()
+      iframeRef.current.src = url
     }
-  }, [])
+  }, [url])
 
   const handleUrlSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault()
-      setUrl(inputUrl)
+      const next = safePreviewUrl(inputUrl)
+      if (next) setUrl(next)
     },
     [inputUrl],
   )
 
   const handlePopOut = useCallback(() => {
-    window.open(url, '_blank', 'width=1200,height=800')
+    const target = safePreviewUrl(url)
+    if (target) window.open(target, '_blank', 'noopener,noreferrer,width=1200,height=800')
   }, [url])
 
   const previewHeight = `calc(${splitRatio * 100}% - 4px)`
