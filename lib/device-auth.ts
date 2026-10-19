@@ -171,20 +171,11 @@ export function storeDeviceToken(
   scopes: string[],
 ): void {
   const store = readTokenStore()
-  const roles = Object.hasOwn(store, deviceId) ? store[deviceId] : {}
-  Object.defineProperty(roles, role, {
-    value: { token, scopes },
-    enumerable: true,
-    writable: true,
-    configurable: true,
-  })
-  Object.defineProperty(store, deviceId, {
-    value: roles,
-    enumerable: true,
-    writable: true,
-    configurable: true,
-  })
-  writeTokenStore(store)
+  const devices = new Map(Object.entries(store))
+  const roles = new Map(Object.entries(devices.get(deviceId) ?? {}))
+  roles.set(role, { token, scopes })
+  devices.set(deviceId, Object.fromEntries(roles))
+  writeTokenStore(Object.fromEntries(devices))
 }
 
 export function clearDeviceAuth(): void {
