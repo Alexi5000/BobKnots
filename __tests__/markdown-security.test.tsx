@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { parse } from 'create-markdown'
 import { BlockRenderer } from 'create-markdown/react'
-import { secureMarkdownBlocks } from '../lib/markdown-security'
+import { secureMarkdownBlocks, safeMarkdownUrl } from '../lib/markdown-security'
 
 function render(markdown: string) {
   const element = document.createElement('div')
@@ -12,6 +12,19 @@ function render(markdown: string) {
 }
 
 describe('markdown renderer URL boundary', () => {
+  it('rejects browser-normalized executable schemes and protocol-relative credentials', () => {
+    for (const value of ['JaVaScRiPt:alert(1)', 'java\nscript:alert(1)', '\tjavascript:alert(1)', '//user:password@example.com/path']) {
+      expect(safeMarkdownUrl(value)).toBe(false)
+    }
+    for (const value of ['./guide.md', '#heading', 'https://example.com/image.png']) {
+      expect(safeMarkdownUrl(value)).toBe(true)
+    }
+    expect(safeMarkdownUrl('https://example.com/image.png', true)).toBe(true)
+    expect(safeMarkdownUrl('mailto:a@example.com', true)).toBe(false)
+    const element = render('![safe](https://example.com/image.png)\n\n[section](#heading) [relative](./guide.md)')
+    expect(element.querySelector('img')?.getAttribute('src')).toBe('https://example.com/image.png')
+    expect(Array.from(element.querySelectorAll('a')).map((anchor) => anchor.getAttribute('href'))).toEqual(['#heading', './guide.md'])
+  })
   it.each(['data:text/html,payload', 'file:///etc/passwd', 'vbscript:alert', 'javascript:alert', 'https://user:password@example.com'])('removes active link destination %s while preserving text', (url) => {
     const element = render(`[label](${url})`)
     expect(element.querySelector('a')).toBeNull()
