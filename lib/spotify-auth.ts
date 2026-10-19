@@ -1,3 +1,4 @@
+import { safeSpotifyHandoff } from '@/lib/safe-navigation'
 import { isTauri } from '@/lib/tauri'
 import { emit } from '@/lib/events'
 
@@ -80,8 +81,8 @@ function getRedirectUri(): string {
   const origin = window.location.origin
   if (
     origin.startsWith('tauri://') ||
-    origin.includes('localhost') ||
-    origin.includes('127.0.0.1')
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1'
   ) {
     const port = window.location.port || '3080'
     return `http://127.0.0.1:${port}/`
@@ -135,9 +136,9 @@ export async function startSpotifyLogin(): Promise<void> {
  */
 export function handleSpotifyAuthHandoff(): boolean {
   const params = new URLSearchParams(window.location.search)
-  const authUrl = params.get('spotify_auth')
+  const authUrl = safeSpotifyHandoff(params.get('spotify_auth') ?? '')
   const verifier = params.get('spotify_verifier')
-  if (authUrl && verifier) {
+  if (authUrl && verifier && /^[A-Za-z0-9._~-]{43,128}$/.test(verifier)) {
     localStorage.setItem(VERIFIER_KEY, verifier)
     // Clean up URL then redirect to Spotify
     window.location.href = authUrl
