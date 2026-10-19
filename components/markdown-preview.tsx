@@ -4,6 +4,7 @@ import { useMemo, useState, useRef, useCallback, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import DOMPurify from 'dompurify'
 import { parse } from 'create-markdown'
+import { secureMarkdownBlocks } from '@/lib/markdown-security'
 import { BlockRenderer } from 'create-markdown/react'
 import { copyToClipboard } from '@/lib/clipboard'
 import { installAbortErrorSuppression, isAbortError } from '@/lib/abort-error'
@@ -227,7 +228,7 @@ export function MarkdownPreview({
         ? DOMPurify.sanitize(content, { ALLOWED_TAGS: [], KEEP_CONTENT: true })
         : content.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
     const normalized = normalizeToMarkdown(clean)
-    const result = parse(normalized)
+    const result = secureMarkdownBlocks(parse(normalized))
     lastParsedRef.current = content
     lastBlocksRef.current = result
     lastParseTimeRef.current = parseTickRef.current
