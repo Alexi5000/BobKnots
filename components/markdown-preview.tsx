@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom'
 import DOMPurify from 'dompurify'
 import { parse } from 'create-markdown'
 import { secureMarkdownBlocks } from '@/lib/markdown-security'
+import { decodeHtmlEntities } from '@/lib/html-entities'
 import { BlockRenderer } from 'create-markdown/react'
 import { copyToClipboard } from '@/lib/clipboard'
 import { installAbortErrorSuppression, isAbortError } from '@/lib/abort-error'
@@ -51,7 +52,7 @@ function normalizeToMarkdown(raw: string): string {
   // <pre> wrapping <code> → fenced code block
   s = s.replace(
     /<pre>\s*<code(?:\s+class="language-(\w+)")?>([\s\S]*?)<\/code>\s*<\/pre>/gi,
-    (_, lang, code) => `\n\`\`\`${lang ?? ''}\n${decodeHtmlEntities(code.trim())}\n\`\`\`\n`,
+    (_, lang, code) => `\n\`\`\`${lang ?? ''}\n${code.trim()}\n\`\`\`\n`,
   )
 
   // <a href="...">text</a> → [text](href)
@@ -109,16 +110,6 @@ function normalizeToMarkdown(raw: string): string {
   s = s.replace(/\n{3,}/g, '\n\n')
 
   return s.trim()
-}
-
-function decodeHtmlEntities(s: string): string {
-  return s
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&nbsp;/g, ' ')
 }
 
 const MENTION_HREF_RE = /^https:\/\/github\.com\/([a-zA-Z0-9](?:[a-zA-Z0-9-]{0,37}[a-zA-Z0-9])?)$/
