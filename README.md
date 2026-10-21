@@ -8,6 +8,37 @@ A lightweight, AI-native code editor powered by [OpenClaw](https://github.com/op
   <img src="assets/start-chat.png" alt="Knot Code — Start screen" width="720" />
 </p>
 
+## Why this fork exists
+
+**What it does.** Knot Code is a code editor built with Next.js and Tauri v2 that ships as a desktop app (macOS, Windows, Linux) and as a static web build. It embeds an agent panel (Ask, Agent and Plan modes), inline diff review, a Monaco editor, an xterm.js terminal and git operations, and it routes every AI request through an [OpenClaw](https://github.com/openclaw/openclaw) gateway that the user runs.
+
+**Who it serves.** Developers who want AI-assisted editing on a machine they control, where the model endpoint is whatever their own OpenClaw gateway is configured for (hosted API, local model, or both) rather than a vendor-operated cloud.
+
+**Why Alex forked it.** The fork was created on 2026-03-06 (GitHub `created_at`), five days after the upstream repository (2026-03-01). The stated motivation is recorded on the `techtide/build-out` branch (commit `1cbd384`, 2026-05-21, "docs: add TechTide fork backstory and architecture notes"), which opens with: "Field engineers and client teams need AI coding agents running locally" with "no code leaving the machine, no third-party API dependencies for sensitive projects." The eight fork-only commits on `main` (2026-10-17 to 2026-10-19, PRs #1 to #8) are CI and security hardening rather than feature work: a pnpm 9 / Node 20 CI fix, a dependency refresh, a vendored GLib iterator soundness backport for GTK3, redirect validation and device-token key protection, cryptographic identifiers for kanban records, constrained markdown link and image destinations, and single-pass HTML entity decoding on import. Three further fork branches hold accessibility, test and SECURITY.md changes that are open as upstream PRs OpenKnots/code-editor #20, #21 and #22.
+
+**Real-world use case (2025–2026 evidence).** **Proposed use case.** A developer on a workstation where source code may not be sent to third-party SaaS runs an OpenClaw gateway bound to loopback, points Knot Code at it, and gets agent chat, plan mode and inline edits while the repository stays on disk. Three pieces of external evidence support the shape of this scenario. Stack Overflow's 2025 Developer Survey (49,000+ respondents) found 84% of developers using or planning to use AI tools while 46% distrust the accuracy of their output, which is the review-every-diff posture that Knot Code's per-hunk accept/reject flow is built for.[^1] OpenClaw's gateway is documented as the single control plane that runs on the user's own machine or server, with a local-first design that keeps keys, config and data on that machine; Knot Code is a client of that gateway, not a replacement for it.[^2] Tauri 2.x, the desktop runtime Knot Code is built on, shipped its 2.12 release in September 2026 with a new permission request handler, so the native shell that keeps the app at a few megabytes without a bundled browser is actively maintained.[^3] The repository contains Vitest unit tests for the `lib/` modules and screenshots of the running app, but no deployment config or fixture that demonstrates this specific locked-down scenario, so it is labeled proposed rather than verified.
+
+[^1]: Stack Overflow, "Stack Overflow's 2025 Developer Survey Reveals Trust in AI at an All Time Low", press release, 2025-07-29. https://stackoverflow.co/company/press/archive/stack-overflow-2025-developer-survey
+
+[^2]: MarkTechPost, "OpenClaw Releases iOS and Android Companion Node Apps That Connect a Phone to a Self-Hosted AI Agent Gateway", 2026-06-29. https://www.marktechpost.com/2026/06/29/openclaw-releases-ios-and-android-companion-node-apps-that-connect-a-phone-to-a-self-hosted-ai-agent-gateway/
+
+[^3]: Tauri, "Announcing Tauri 2.12", 2026-09-26. https://tauri.app/blog/tauri-2.12/
+
+## Upstream
+
+- **Upstream project:** [OpenKnots/code-editor](https://github.com/OpenKnots/code-editor) (Knot Code), licensed under the [Apache License 2.0](LICENSE). The license file is preserved unchanged; neither upstream nor this fork ships a NOTICE file.
+- **Fork created:** 2026-03-06 (GitHub `created_at`).
+- **Sync status (2026-10-20):** 8 commits ahead of and 0 commits behind `OpenKnots/code-editor@main` (`gh api repos/Alexi5000/BobKnots/compare/OpenKnots:main...Alexi5000:main`).
+- **What changed in this fork:** 8 commits, 146 files changed (+57,742 / -3,288). 124 of those files and about 54,900 of the added lines are the vendored `src-tauri/vendor/glib` crate carrying the iterator soundness backport; the remaining changes are small code and CI fixes.
+  - `8cd2695` fix(ci): use pnpm 9 compatible with Node 20 (#1)
+  - `e5706a6` ci: allow manual quality verification (#2)
+  - `7cb1204` fix: refresh vulnerable JavaScript and Rust dependencies (#3)
+  - `2ff0b69` fix: backport upstream GLib iterator soundness patch for GTK3 (#4)
+  - `54ee16a` Validate preview and Spotify redirects and protect device token keys (#5)
+  - `44007d6` fix: use cryptographic identifiers for kanban records (#6)
+  - `c44779d` fix: constrain rendered markdown link and image destinations (#7)
+  - `16fb579` fix: decode imported HTML entities once (#8)
+
 ## Screenshots
 
 |                   Chat                   |                 Agent Workshop                 |
@@ -147,6 +178,10 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the technical architecture,
 - **Styling:** Tailwind CSS v4 (CSS custom properties)
 - **Icons:** @iconify/react (Lucide icon set)
 - **Package Manager:** pnpm
+
+## Security
+
+As of 2026-10-21 this fork has 0 open Dependabot alerts (GitHub `vulnerabilityAlerts(states: OPEN)` = 0) and 0 open secret-scanning alerts, and no known upstream advisory without a fixed release applies to its dependency tree. CodeQL reported 18 open medium-severity warnings and no critical or high findings on 2026-10-20: unpinned third-party action tags and missing explicit `permissions` blocks in the GitHub workflows, three indirect command-line injection findings in `scripts/release.mjs`, and a missing `postMessage` origin check in `components/plugins/youtube/youtube-plugin.tsx`. The four findings in `ci.yml` are fixed in this fork by pinning `dtolnay/rust-toolchain` and `pnpm/action-setup` to commit SHAs and setting `permissions: contents: read`; the other 14 remain open and have not been dismissed. Report vulnerabilities as described in [SECURITY.md](SECURITY.md).
 
 ## Contributing
 
