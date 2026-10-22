@@ -115,7 +115,7 @@ export function YouTubePlugin() {
   const sendPlayerCommand = useCallback((func: string, args: unknown[] = []) => {
     const win = iframeRef.current?.contentWindow
     if (!win) return
-    win.postMessage(JSON.stringify({ event: 'command', func, args }), '*')
+    win.postMessage(JSON.stringify({ event: 'command', func, args }), 'https://www.youtube-nocookie.com')
   }, [])
 
   const syncPlayerVolume = useCallback(() => {
@@ -173,6 +173,8 @@ export function YouTubePlugin() {
   // Listen for YouTube iframe API messages
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== 'https://www.youtube-nocookie.com') return
+      if (!iframeRef.current?.contentWindow || event.source !== iframeRef.current.contentWindow) return
       if (typeof event.data !== 'string') return
       try {
         const data = JSON.parse(event.data)
@@ -307,7 +309,7 @@ export function YouTubePlugin() {
             onLoad={() => {
               const win = iframeRef.current?.contentWindow
               if (!win) return
-              win.postMessage(JSON.stringify({ event: 'listening', id: 1 }), '*')
+              win.postMessage(JSON.stringify({ event: 'listening', id: 1 }), 'https://www.youtube-nocookie.com')
               setTimeout(syncPlayerVolume, 500)
             }}
           />
